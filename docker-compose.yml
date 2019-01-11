@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  nginx:
+    image: linuxserver/letsencrypt
+    container_name: nginx
+    restart: always
+    volumes:
+      - ./nginx/config:/config
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/log:/var/log/nginx
+      - ../app/poc/build:/var/www/poc
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - "PUID=1001"
+      - "PGID=1001"
+      - "EMAIL=XXXX"
+      - "URL=XXXX"
+      - "SUBDOMAINS=www,api"
+      - "TZ=Europe/Moscow"
+      - "VALIDATION=http"
+      - "STAGING=false"
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    volumes:
+      - ../data/db:/data/db
+    ports:
+      - "XXXX:XXXX"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: XXXX
+      MONGO_INITDB_ROOT_PASSWORD: XXXX
+
+  pos:
+    image: pos
+    container_name: pos
+    build:
+      context: ../app/pos
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ../app/pos/server:/app/server
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_HOST=XXX.XXX.XXX.XXX:XXXX
+      - CLIENT_HOST=XXXX
+      - CLIENT_HOST_WWW=XXXX
+      - PORT=8080
+    depends_on:
+      - mongo

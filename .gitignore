@@ -1,0 +1,4 @@
+nginx/log
+nginx/config
+nginx/config/log
+nginx/config/fail2ban/
